@@ -35,6 +35,8 @@ public class PensionManagementApp {
         List<PensionPlan> pensionPlans = new ArrayList<>();
         pensionPlans.add(new PensionPlan(1, LocalDate.of(2023, 1, 17), 100.00, 1));
         pensionPlans.add(new PensionPlan(3, LocalDate.of(2019, 11, 4), 1555.50, 3));
+        pensionPlans.add(new PensionPlan(4, LocalDate.of(2023, 4, 3), 2000.50, 2));
+
         return pensionPlans;
     }
 
