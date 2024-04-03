@@ -15,7 +15,8 @@ public class PensionManagementApp {
 
         System.out.println("Employees with pension data: ");
         printEmployeesWithPensionPlanData(employees, pensionPlans);
-        System.out.println("\nEmployees eligible for pension:");
+        System.out.println("\nMonthly Upcoming " +
+                "Enrollees report,:");
         printMonthlyUpcomingEnrolleesReport(employees, pensionPlans);
     }
 
@@ -23,7 +24,7 @@ public class PensionManagementApp {
     private static List<Employee> initializeEmployees() {
         List<Employee> employees = new ArrayList<>();
         employees.add(new Employee(1, "Daniel", "Agar", LocalDate.of(2018, 1, 17), 105945.50));
-        employees.add(new Employee(2, "Bernard", "Shaw", LocalDate.of(2011, 4, 3), 197750.00));
+        employees.add(new Employee(2, "Bernard", "Shaw", LocalDate.of(2019, 4, 3), 197750.00));
         employees.add(new Employee(3, "Carly", "Agar", LocalDate.of(2014, 5, 16), 842000.75));
         employees.add(new Employee(4, "Wesley", "Schneider", LocalDate.of(2019, 5, 2), 74500.00));
         return employees;
@@ -48,27 +49,35 @@ public class PensionManagementApp {
                     .orElse(null);
 
             String pensionPlanData = plan != null ? ", \"pensionPlan\": " + plan.toString() : "";
-            System.out.println(employee.toJsom(pensionPlanData));
+            System.out.println(employee.toJson(pensionPlanData));
         }
     }
 
     // 2: Print monthly upcoming enrollees report in JSON format
     private static void printMonthlyUpcomingEnrolleesReport(List<Employee> employees, List<PensionPlan> pensionPlans) {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate nextMonthFirstDay = currentDate.plusMonths(1).withDayOfMonth(1);
+        LocalDate nextMonthLastDay = nextMonthFirstDay.plusMonths(1).minusDays(1);
+
         List<Employee> upcomingEnrollees = employees.stream()
-                .filter(e -> !isEnrolledInPensionPlan(e, pensionPlans) && isEligibleForEnrollment(e))
+                .filter(e -> !isEnrolledInPensionPlan(e, pensionPlans) && isEligibleForEnrollment(e, nextMonthLastDay))
                 .collect(Collectors.toList());
 
         Collections.sort(upcomingEnrollees, Comparator.comparing(Employee::getEmploymentDate));
+
+        List<String> enrolleesJsonList = new ArrayList<>();
         for (Employee employee : upcomingEnrollees) {
-            System.out.println(employee.toString());
+            enrolleesJsonList.add(employee.toString()+"\n");
         }
+        System.out.println("[" + String.join(", ", enrolleesJsonList) + "]");
     }
 
-    private static boolean isEligibleForEnrollment(Employee employee) {
-        LocalDate currentDate = LocalDate.now();
+    private static boolean isEligibleForEnrollment(Employee employee, LocalDate nextMonthLastDay) {
         LocalDate employmentDatePlusFiveYears = employee.getEmploymentDate().plusYears(5);
-        return !employmentDatePlusFiveYears.isAfter(currentDate) &&
-                employmentDatePlusFiveYears.isBefore(currentDate.withDayOfMonth(currentDate.lengthOfMonth()));
+        //System.out.println((employmentDatePlusFiveYears));
+        //System.out.println(nextMonthLastDay);
+        //System.out.println("=========================");
+        return !employmentDatePlusFiveYears.isAfter(nextMonthLastDay);
     }
 
     private static boolean isEnrolledInPensionPlan(Employee employee, List<PensionPlan> pensionPlans) {

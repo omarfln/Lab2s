@@ -29,7 +29,7 @@ class Employee {
                 "\", \"employmentDate\": \"" + employmentDate + "\", \"yearlySalary\": " + yearlySalary + " }";
     }
 
-    public String toJsom(String plan) {
+    public String toJson(String plan) {
         return "{ \"employeeId\": " + employeeId + ", \"firstName\": \"" + firstName + "\", \"lastName\": \"" + lastName +
                 "\", \"employmentDate\": \"" + employmentDate + "\", \"yearlySalary\": " + yearlySalary +  plan +" }";
     }
